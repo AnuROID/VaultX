@@ -1,60 +1,221 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VaultX — Secure Image Vault (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+VaultX is a secure image storage web application built using Laravel.
+The application allows users to upload images, encrypt them before storing them in the database, and securely access them later.
 
-## About Laravel
+Each uploaded image is encrypted using Laravel's Crypt system and linked to the authenticated user, ensuring that only the owner can view or download it.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Authentication
 
-## Learning Laravel
+* User registration
+* User login
+* User logout
+* Protected routes using Laravel authentication middleware
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Secure Image Storage
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* Upload image files
+* Validate image type and size
+* Encrypt image data before saving to database
 
-## Laravel Sponsors
+### Image Management
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* View uploaded images
+* Search images by file name
+* Download decrypted image files
+* Delete images
 
-### Premium Partners
+### Security
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+* Image data stored encrypted
+* Users can access only their own images
+* CSRF protection enabled
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Tech Stack
 
-## Code of Conduct
+Backend:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Laravel 12
+* PHP 8+
 
-## Security Vulnerabilities
+Database:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+* SQLite
 
-## License
+Frontend:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# VaultX" 
+* Blade Templates
+* Tailwind CSS (Laravel Breeze)
+
+Authentication:
+
+* Laravel Breeze
+
+Encryption:
+
+* Laravel Crypt
+
+---
+
+# Project Structure
+
+```
+VaultX
+│
+├── app
+│   ├── Http
+│   │   └── Controllers
+│   │       └── ImageController.php
+│   └── Models
+│       └── Image.php
+│
+├── database
+│   └── migrations
+│
+├── resources
+│   └── views
+│       └── images
+│           ├── index.blade.php
+│           └── upload.blade.php
+│
+├── routes
+│   └── web.php
+│
+└── public
+    └── images
+```
+
+---
+
+# Database Schema
+
+Table: images
+
+| Column     | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| id         | integer   | Primary key          |
+| user_id    | integer   | Owner of image       |
+| name       | string    | Original image name  |
+| data       | longtext  | Encrypted image data |
+| created_at | timestamp | Upload time          |
+| updated_at | timestamp | Update time          |
+
+---
+
+# How It Works
+
+### Upload Flow
+
+1. User selects an image
+2. Image is validated
+3. Image file is read
+4. Image content is encrypted
+5. Encrypted data is stored in database
+
+```
+Upload Image
+     ↓
+Validate File
+     ↓
+Encrypt Image
+     ↓
+Store in Database
+```
+
+---
+
+### Image Display Flow
+
+```
+Fetch Image from Database
+        ↓
+Decrypt Image Data
+        ↓
+Convert to Base64
+        ↓
+Display in Browser
+```
+
+---
+
+### Image Download Flow
+
+```
+User clicks Download
+        ↓
+Controller decrypts image
+        ↓
+Image returned as file response
+        ↓
+Browser downloads image
+```
+
+---
+
+# Routes
+
+| Method | Route                 | Description    |
+| ------ | --------------------- | -------------- |
+| GET    | /images               | View images    |
+| GET    | /upload               | Upload page    |
+| POST   | /upload               | Store image    |
+| DELETE | /images/{id}          | Delete image   |
+| GET    | /images/download/{id} | Download image |
+
+All routes are protected by authentication middleware.
+
+---
+
+# Security Implementation
+
+* Image data encrypted using Laravel Crypt
+* Each image linked to authenticated user
+* Unauthorized access prevented
+* CSRF protection enabled
+* Server-side validation for uploads
+
+---
+
+# Example Controller Logic
+
+```
+Upload Image
+     ↓
+Validate Request
+     ↓
+Encrypt Image Data
+     ↓
+Save to Database
+```
+
+---
+
+# Future Improvements
+
+* Image preview modal
+* Image tagging system
+* Image sharing links
+* Drag and drop upload
+* Cloud storage integration
+* Image thumbnails
+
+---
+
+# Author
+
+Anurag Sharma
+
+Computer Science Engineering Student
+Full Stack Developer (Learning Laravel & Backend Systems)
+
+---
+
+# License
+
+This project is for educational purposes.
